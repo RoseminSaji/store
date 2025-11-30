@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  product_code: MyString
+  stock: 1
+  unit_price: 9.99
+  tax_percentage: 9.99
+
+two:
+  name: MyString
+  product_code: MyString
+  stock: 1
+  unit_price: 9.99
+  tax_percentage: 9.99
