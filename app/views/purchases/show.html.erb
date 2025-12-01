@@ -1,0 +1,105 @@
+<h1>Invoice</h1>
+
+<section>
+  <h2>Customer</h2>
+  <p>
+    <strong>Email:</strong>
+    <%= @purchase.customer.email %>
+  </p>
+
+  <p>
+    <strong>Purchase ID:</strong>
+    <%= @purchase.id %><br>
+    <strong>Date:</strong>
+    <%= @purchase.created_at.strftime("%d-%m-%Y %H:%M") %>
+  </p>
+</section>
+
+<hr>
+
+<section>
+  <h2>Items</h2>
+
+  <table border="1" cellpadding="4" cellspacing="0">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Product Code</th>
+        <th>Product Name</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th>Price (Without Tax)</th>
+        <th>Tax %</th>
+        <th>Tax Amount</th>
+        <th>Total (With Tax)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @purchase.line_items.each_with_index do |li, index| %>
+        <% price_without_tax = li.unit_price * li.quantity %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= li.product.product_code %></td>
+          <td><%= li.product.name %></td>
+          <td><%= number_to_currency(li.unit_price) %></td>
+          <td><%= li.quantity %></td>
+          <td><%= number_to_currency(price_without_tax) %></td>
+          <td><%= li.tax_percentage %> %</td>
+          <td><%= number_to_currency(li.tax_amount) %></td>
+          <td><%= number_to_currency(li.total_price) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</section>
+
+<hr>
+
+<section>
+  <h2>Totals</h2>
+  <p>
+    <strong>Total Without Tax:</strong>
+    <%= number_to_currency(@purchase.total_without_tax) %>
+  </p>
+  <p>
+    <strong>Total Tax:</strong>
+    <%= number_to_currency(@purchase.total_tax) %>
+  </p>
+  <p>
+    <strong>Net Amount:</strong>
+    <%= number_to_currency(@purchase.net_amount) %>
+  </p>
+  <p>
+    <strong>Rounded Net Amount:</strong>
+    <%= number_to_currency(@purchase.rounded_net_amount) %>
+  </p>
+  <p>
+    <strong>Paid Amount:</strong>
+    <%= number_to_currency(@purchase.paid_amount) %>
+  </p>
+  <p>
+    <strong>Balance Amount (Change to Customer):</strong>
+    <%= number_to_currency(@purchase.balance_amount) %>
+  </p>
+</section>
+
+<hr>
+
+<section>
+  <h2>Change Denomination Breakdown</h2>
+
+  <%# We don't persist change_denominations, so for now we'll just show balance.
+      If you want exact breakdown, we can recompute here using the same logic
+      from calculate_change_denominations or store it. %>
+
+  <p>
+    The total change to return is
+    <strong><%= number_to_currency(@purchase.balance_amount) %></strong>.
+  </p>
+
+  <%# Optional: list denominations if you decide to persist or recompute %>
+</section>
+
+<br>
+
+<%= link_to "Back to New Purchase", new_purchase_path %>
