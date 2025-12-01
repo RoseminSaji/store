@@ -1,0 +1,142 @@
+<h1>New Purchase (Billing Page)</h1>
+
+<%= form_with url: purchases_path, scope: :purchase, local: true, data: { turbo: false } do |f| %>
+  <!-- Customer Email -->
+  <fieldset>
+    <legend>Customer Details</legend>
+
+    <div>
+      <%= label_tag :customer_email, "Customer Email" %><br>
+      <%= text_field_tag "purchase[customer_email]", nil, required: true %>
+    </div>
+  </fieldset>
+
+  <hr>
+
+  <!-- Products Section -->
+  <fieldset>
+    <legend>Products</legend>
+
+    <table id="line-items-table" border="1" cellpadding="4" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Initial row -->
+        <tr class="line-item-row">
+          <td>
+            <select name="purchase[line_items][][product_id]" required>
+              <option value="">-- Select Product --</option>
+              <% @products.each do |product| %>
+                <option value="<%= product.id %>">
+                  <%= "#{product.name} (#{product.product_code}) - #{product.unit_price}" %>
+                </option>
+              <% end %>
+            </select>
+          </td>
+          <td>
+            <input type="number"
+                   name="purchase[line_items][][quantity]"
+                   min="1"
+                   value="1"
+                   required>
+          </td>
+          <td>
+            <button type="button" class="remove-line-item" onclick="removeLineItem(this)">
+              Remove
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <br>
+    <button type="button" id="add-line-item">Add New Item</button>
+  </fieldset>
+
+  <hr>
+
+  <!-- Separator (as in PDF) + Denominations Section -->
+  <div style="margin: 20px 0; border-top: 2px dashed #aaa;"></div>
+
+  <fieldset>
+    <legend>Denominations Available in Shop</legend>
+
+    <p>Enter how many notes/coins of each denomination the shop currently has.</p>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+      <% @denoms.each do |value| %>
+        <div>
+          <label for="denom-<%= value %>">
+            <%= value %>
+          </label><br>
+          <input id="denom-<%= value %>"
+                 type="number"
+                 name="purchase[denominations][<%= value %>]"
+                 min="0"
+                 value="0">
+        </div>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <hr>
+
+  <!-- Payment Section -->
+  <fieldset>
+    <legend>Payment</legend>
+
+    <div>
+      <%= label_tag :paid_amount, "Customer Paid Amount" %><br>
+      <%= number_field_tag "purchase[paid_amount]", nil, min: 0, step: 0.01, required: true %>
+    </div>
+  </fieldset>
+
+  <br>
+
+  <%= submit_tag "Generate Bill" %>
+<% end %>
+
+<!-- Simple JS for dynamic row handling -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var addButton = document.getElementById("add-line-item");
+    var tableBody = document.querySelector("#line-items-table tbody");
+
+    addButton.addEventListener("click", function () {
+      var firstRow = document.querySelector(".line-item-row");
+      var newRow   = firstRow.cloneNode(true);
+
+      // Reset the cloned row values
+      var selects = newRow.querySelectorAll("select");
+      selects.forEach(function (select) {
+        select.selectedIndex = 0;
+      });
+
+      var inputs = newRow.querySelectorAll('input[type="number"]');
+      inputs.forEach(function (input) {
+        if (input.name.includes("[quantity]")) {
+          input.value = 1;
+        } else {
+          input.value = 0;
+        }
+      });
+
+      tableBody.appendChild(newRow);
+    });
+  });
+
+  function removeLineItem(button) {
+    var row = button.closest(".line-item-row");
+    var tbody = row.parentNode;
+    if (tbody.querySelectorAll(".line-item-row").length > 1) {
+      tbody.removeChild(row);
+    } else {
+      alert("At least one line item is required.");
+    }
+  }
+</script>

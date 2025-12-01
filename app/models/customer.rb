@@ -1,5 +1,5 @@
 class Customer < ApplicationRecord
-  has_many :purchases
+  has_many :purchases, dependent: :destroy
 
   validates :email,
   presence: true,

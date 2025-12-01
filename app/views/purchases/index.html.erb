@@ -1,0 +1,30 @@
+<h1>Purchases</h1>
+
+<p>
+  <%= link_to "New Purchase", new_purchase_path %>
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Customer</th>
+      <th>Net Amount</th>
+      <th>Paid</th>
+      <th>Balance</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @purchases.each do |purchase| %>
+      <tr>
+        <td><%= purchase.id %></td>
+        <td><%= purchase.customer&.email %></td>
+        <td><%= purchase.net_amount %></td>
+        <td><%= purchase.paid_amount %></td>
+        <td><%= purchase.balance_amount %></td>
+        <td><%= link_to "Show", purchase_path(purchase) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
